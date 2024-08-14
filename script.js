@@ -1,5 +1,6 @@
 var background = document.getElementById("background");
 var ctx = background.getContext("2d");
+const radio = document.getElementsByName("drone")
 
 background.width = 400;
 background.height = 300;
@@ -178,6 +179,12 @@ document.addEventListener('keyup', function(event) {
   };
 })
 
+document.addEventListener('keypress', function(event){
+  if(event.key === " "){
+    console.log(getSelectedMode());
+  }
+})
+
 let player = new pong(10, 0 + pongHeight, 'left');
 let ai = new pong(background.width - (distanceFromSide + pongWidth), 0 + pongHeight, 'right');
 let ball = new ballC(background.width / 2, background.height / 2, pongSpeeds / 2, pongSpeeds / 4);
@@ -190,16 +197,17 @@ setInterval(function() {
 
 function gameTick() {
   ctx.clearRect(0, 0, background.width, background.height);
-  if (moveUp) {
+  if (moveUp && getSelectedMode() == "manual") {
     player.setY = player.getY - pongSpeeds;
   }
-  if (moveDown) {
+  if (moveDown && getSelectedMode() == "manual") {
     player.setY = player.getY + pongSpeeds;
   }
   ctx.fillRect(0, 0, background.width, background.height);
   //Player movement
   player.draw();
-  player.ai();
+  if(getSelectedMode() == "auto"){ player.ai(); }
+ 
   player.collision();
   //Ai movement
   ai.draw();
@@ -211,4 +219,18 @@ function gameTick() {
   ball.draw();
 
 }
-//done
+
+function getSelectedMode() {
+    let selectedValue = '';
+    for (const r of radio) {
+        if (r.checked) {
+            selectedValue = r.value;
+            break;
+        }
+    }
+    if (selectedValue) {
+        return selectedValue;
+    } else {
+           return " ";
+    }
+}
